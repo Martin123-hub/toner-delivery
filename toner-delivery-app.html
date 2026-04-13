@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Toner Delivery — Signature App</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;color:#1a1a2e;min-height:100vh}
+  .header{background:#0078d4;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .header-logo{width:32px;height:32px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .header-logo svg{width:20px;height:20px}
+  .header h1{font-size:17px;font-weight:600;letter-spacing:.01em}
+  .header-sub{font-size:12px;opacity:.8;margin-top:1px}
+  .tab-bar{display:flex;background:#fff;border-bottom:1px solid #e0e4ea;padding:0 16px;gap:0}
+  .tab{padding:12px 18px;font-size:13px;font-weight:500;cursor:pointer;border:none;border-bottom:3px solid transparent;color:#666;background:none;transition:all .15s}
+  .tab.active{color:#0078d4;border-bottom-color:#0078d4}
+  .tab:hover{color:#0078d4;background:#f0f6ff}
+  .view{display:none;padding:20px;max-width:680px;margin:0 auto}
+  .view.active{display:block}
+  .card{background:#fff;border:1px solid #e0e4ea;border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .card-title{font-size:13px;font-weight:600;color:#444;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #f0f2f5}
+  .field{margin-bottom:12px}
+  .field label{font-size:12px;color:#666;display:block;margin-bottom:5px;font-weight:500}
+  .field input,.field select{width:100%;padding:9px 12px;font-size:14px;border:1px solid #d0d5dd;border-radius:7px;background:#fff;color:#1a1a2e;transition:border .15s}
+  .field input:focus,.field select:focus{outline:none;border-color:#0078d4;box-shadow:0 0 0 3px rgba(0,120,212,.1)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:480px){.row2{grid-template-columns:1fr}}
+  .btn{padding:10px 18px;font-size:14px;font-weight:500;border-radius:7px;cursor:pointer;border:1px solid #d0d5dd;background:#fff;color:#333;transition:all .15s}
+  .btn:hover{background:#f5f7fa}
+  .btn-primary{background:#0078d4;color:#fff;border-color:#0078d4}
+  .btn-primary:hover{background:#106ebe}
+  .btn-success{background:#107c41;color:#fff;border-color:#107c41;width:100%;padding:14px;font-size:15px;border-radius:8px;margin-top:6px}
+  .btn-success:hover{background:#0a5c30}
+  .btn-sm{padding:6px 12px;font-size:12px}
+  .btn-ghost{width:100%;padding:9px;font-size:13px;border:1px dashed #b0b8c4;color:#666;background:none;border-radius:7px;cursor:pointer;margin-top:6px;transition:all .15s}
+  .btn-ghost:hover{background:#f0f6ff;border-color:#0078d4;color:#0078d4}
+  .upload-zone{border:2px dashed #c0c8d4;border-radius:10px;padding:24px;text-align:center;cursor:pointer;color:#888;font-size:13px;margin-bottom:12px;transition:all .15s;background:#fafbfc}
+  .upload-zone:hover{border-color:#0078d4;background:#f0f6ff;color:#0078d4}
+  .pdf-row{display:flex;align-items:center;gap:12px;background:#fef2f2;border:1px solid #fbd5d5;border-radius:8px;padding:10px 14px;margin-bottom:12px}
+  .pdf-icon{width:34px;height:42px;background:#c00000;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+  .b-sent{background:#dbeafe;color:#1e40af}
+  .b-done{background:#dcfce7;color:#166534}
+  .b-pending{background:#fef9c3;color:#854d0e}
+  .divider{border:none;border-top:1px solid #f0f2f5;margin:14px 0}
+  .eq-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .eq-num{width:20px;font-size:12px;color:#888;text-align:right;flex-shrink:0;font-weight:500}
+  .eq-row input{flex:1;padding:8px 11px;font-size:13px;border:1px solid #d0d5dd;border-radius:7px;background:#fff;color:#1a1a2e}
+  .eq-row input:focus{outline:none;border-color:#0078d4}
+  .eq-remove{width:28px;height:28px;border-radius:6px;border:1px solid #fbd5d5;background:#fff;cursor:pointer;color:#c00;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .eq-remove:hover{background:#fef2f2}
+  .eq-tag{display:inline-block;background:#dbeafe;color:#1e40af;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px 3px 2px 0}
+  .email-preview{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;font-size:12px;color:#555;margin:10px 0;line-height:1.7}
+  .email-preview strong{color:#1a1a2e}
+  .notice{font-size:12px;color:#555;padding:10px 14px;background:#f0f6ff;border-radius:0 8px 8px 0;margin-bottom:14px;border-left:3px solid #0078d4}
+  .success-box{background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:13px 16px;color:#166534;font-size:13px;margin:10px 0;font-weight:500}
+  .job-card{background:#fff;border:1px solid #e0e4ea;border-radius:10px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .job-title{font-size:14px;font-weight:600;color:#1a1a2e}
+  .job-meta{font-size:12px;color:#888;margin-top:3px}
+
+  /* CUSTOMER SIGN SCREEN */
+  .cust-screen{display:none;background:#fff;border-radius:12px;border:1px solid #e0e4ea;padding:28px 20px 24px;text-align:center;min-height:560px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+  .cust-screen.active{display:block}
+  .cust-badge{display:inline-block;background:#dbeafe;color:#1e40af;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+  .cust-heading{font-size:24px;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+  .cust-sub{font-size:13px;color:#888;margin-bottom:22px}
+  .cust-delivery-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;text-align:left;margin-bottom:22px}
+  .cust-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;font-size:13px;border-bottom:1px solid #f0f2f5}
+  .cust-row:last-child{border-bottom:none}
+  .cust-row span:first-child{color:#888;flex-shrink:0;margin-right:10px}
+  .cust-row span:last-child{font-weight:500;text-align:right}
+  .sig-label{font-size:12px;color:#666;text-align:left;margin-bottom:6px;font-weight:500}
+  .sig-wrap{border:2px solid #d0d5dd;border-radius:8px;overflow:hidden;background:#fff;margin-bottom:12px;position:relative}
+  .sig-x{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:700;color:#d0d5dd;pointer-events:none;z-index:1;line-height:1}
+  canvas{display:block;width:100%;touch-action:none;cursor:crosshair}
+  .cust-actions{display:flex;gap:10px}
+  .cust-clear{flex-shrink:0;padding:12px 18px;font-size:14px;border-radius:8px;cursor:pointer;border:1px solid #d0d5dd;background:#fff;color:#444;font-weight:500}
+  .cust-confirm{flex:1;padding:12px;font-size:15px;font-weight:600;border-radius:8px;cursor:pointer;border:none;background:#107c41;color:#fff}
+  .cust-confirm:hover{background:#0a5c30}
+  .legal-text{font-size:11px;color:#aaa;margin-top:16px;line-height:1.5}
+  .sig-img{max-width:100%;max-height:70px;border:1px solid #e0e4ea;border-radius:6px;margin-top:8px}
+  .summary-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:13px;border-bottom:1px solid #f0f2f5}
+  .summary-row:last-child{border-bottom:none}
+  .summary-row span:first-child{color:#888;flex-shrink:0;margin-right:8px}
+  .powered{text-align:center;font-size:11px;color:#bbb;padding:20px 0 10px}
+
+  /* EmailJS status */
+  .emailjs-note{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:12px 14px;font-size:12px;color:#6d4c00;margin-bottom:14px;line-height:1.6}
+  .emailjs-note strong{color:#4a3200}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="3" width="8" height="8" rx="1.5" fill="#0078d4"/>
+      <rect x="13" y="3" width="8" height="8" rx="1.5" fill="#0078d4"/>
+      <rect x="3" y="13" width="8" height="8" rx="1.5" fill="#0078d4"/>
+      <rect x="13" y="13" width="8" height="8" rx="1.5" fill="#0078d4"/>
+    </svg>
+  </div>
+  <div>
+    <div class="header h1">Toner Delivery</div>
+    <div class="header-sub">Signature & Delivery Management</div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('dispatcher',this)">Dispatcher</button>
+  <button class="tab" onclick="showTab('tech',this)">Tech View</button>
+  <button class="tab" onclick="showTab('inbox',this)">Completed</button>
+  <button class="tab" onclick="showTab('settings',this)">Settings</button>
+</div>
+
+<!-- ══════════ DISPATCHER ══════════ -->
+<div id="tab-dispatcher" class="view active">
+  <div id="emailjs-warning" class="emailjs-note" style="display:none">
+    <strong>Email not configured yet.</strong> Go to the <strong>Settings</strong> tab and enter your EmailJS details to enable real email sending. Jobs will still save locally until then.
+  </div>
+
+  <div class="card">
+    <div class="card-title">New Delivery Order</div>
+
+    <div class="upload-zone" id="uz" onclick="document.getElementById('fu').click()">
+      <input type="file" id="fu" accept=".pdf" style="display:none" onchange="pickPDF(event)">
+      <div style="font-size:28px;color:#c00;margin-bottom:6px">PDF</div>
+      <div style="font-weight:500">Click to upload eAutomate delivery order</div>
+      <div style="font-size:11px;margin-top:4px;color:#aaa">.pdf files only</div>
+    </div>
+    <div id="pdf-selected" style="display:none">
+      <div class="pdf-row">
+        <div class="pdf-icon">PDF</div>
+        <div style="flex:1"><div id="pn" style="font-weight:600;font-size:13px"></div><div id="ps" style="font-size:11px;color:#888"></div></div>
+        <button class="btn btn-sm" onclick="clearPDF()">Remove</button>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field"><label>Customer name</label><input id="d-cust" placeholder="Acme Corp"></div>
+      <div class="field"><label>Delivery address</label><input id="d-addr" placeholder="123 Main St, City"></div>
+    </div>
+
+    <div class="field">
+      <label>Equipment number(s)</label>
+      <div id="eq-list">
+        <div class="eq-row" data-idx="0">
+          <span class="eq-num">1</span>
+          <input type="text" placeholder="e.g. EQ-10042">
+        </div>
+      </div>
+      <button class="btn-ghost" onclick="addEquipment()">+ Add another equipment number</button>
+    </div>
+
+    <div class="row2">
+      <div class="field"><label>Tech name</label><input id="d-tech" placeholder="Mike R."></div>
+      <div class="field"><label>Tech email</label><input id="d-techemail" type="email" placeholder="tech@company.com"></div>
+    </div>
+    <div class="field"><label>Dispatcher email (receives completed receipts)</label><input id="d-dispemail" type="email" placeholder="dispatch@company.com"></div>
+
+    <div id="email-preview-box" style="display:none">
+      <div class="email-preview">
+        <div><strong>To:</strong> <span id="prev-to"></span></div>
+        <div><strong>Subject:</strong> Delivery job — <span id="prev-subj"></span></div>
+        <div style="margin-top:6px"><strong>Body:</strong> Hi <span id="prev-tech"></span>, you have a toner delivery for <strong><span id="prev-cust"></span></strong> at <span id="prev-addr"></span>. Equipment: <span id="prev-eq"></span>. Tap the link in this email to open your delivery form.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:10px">
+      <button class="btn btn-sm" onclick="previewEmail()">Preview email</button>
+      <button class="btn btn-primary" onclick="sendToTech()">Send to Tech</button>
+    </div>
+  </div>
+
+  <div class="card-title" style="padding:0 4px 8px">Active Jobs</div>
+  <div id="sent-jobs"><div style="font-size:13px;color:#aaa;padding:8px 4px">No jobs sent yet.</div></div>
+</div>
+
+<!-- ══════════ TECH VIEW ══════════ -->
+<div id="tab-tech" class="view">
+  <div id="tech-no-job" style="text-align:center;padding:48px 20px;color:#aaa;font-size:14px">No job loaded.<br><span style="font-size:12px">Send a job from the Dispatcher tab first.</span></div>
+
+  <!-- Tech detail -->
+  <div id="tech-main" style="display:none">
+    <div class="notice">Review job details, fill in customer name, then hand the phone to the customer.</div>
+    <div class="job-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="job-title" id="tj-id"></div>
+          <div class="job-meta" id="tj-addr"></div>
+          <div style="margin-top:7px" id="tj-eq-tags"></div>
+        </div>
+        <span class="badge b-sent">Open</span>
+      </div>
+      <div class="divider"></div>
+      <div class="pdf-row" style="cursor:pointer;margin-bottom:0" onclick="showPDFModal()">
+        <div class="pdf-icon">PDF</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:13px" id="tj-pdfname"></div><div style="font-size:11px;color:#888">Tap to view eAutomate order</div></div>
+        <span style="font-size:18px;color:#bbb">›</span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="card-title">Delivery Info</div>
+      <div class="field"><label>Customer printed name</label><input id="t-cname" placeholder="Full name of person signing"></div>
+      <div class="field"><label>Units delivered</label><input id="t-qty" type="number" value="1" min="1" style="width:120px"></div>
+      <button class="btn-success" onclick="goToCustomerScreen()">Hand Phone to Customer →</button>
+    </div>
+  </div>
+
+  <!-- Customer sign screen -->
+  <div id="cust-sign-screen" class="cust-screen">
+    <div class="cust-badge" id="cs-company"></div>
+    <div class="cust-heading">Please sign below</div>
+    <div class="cust-sub">Confirm receipt of your toner delivery</div>
+    <div class="cust-delivery-box">
+      <div class="cust-row"><span>Equipment #</span><span id="cs-eq"></span></div>
+      <div class="cust-row"><span>Quantity</span><span id="cs-qty"></span></div>
+      <div class="cust-row"><span>Location</span><span id="cs-addr"></span></div>
+    </div>
+    <div class="sig-label">Sign with your finger</div>
+    <div class="sig-wrap">
+      <div class="sig-x">X</div>
+      <canvas id="sigpad" height="170"></canvas>
+    </div>
+    <div class="cust-actions">
+      <button class="cust-clear" onclick="clearSig()">Clear</button>
+      <button class="cust-confirm" onclick="confirmSignature()">Confirm Signature</button>
+    </div>
+    <div class="legal-text">By signing you confirm receipt of the items listed above.<br>This record will be sent to your service provider.</div>
+  </div>
+
+  <!-- Tech submit screen -->
+  <div id="tech-submit-screen" style="display:none">
+    <div class="notice">Customer has signed. Review and submit to dispatcher.</div>
+    <div class="card">
+      <div class="card-title">Delivery Summary</div>
+      <div id="submit-summary"></div>
+      <div class="divider"></div>
+      <div style="font-size:12px;color:#888;margin-bottom:8px;font-weight:500">Customer Signature</div>
+      <img id="sig-result" class="sig-img" alt="Customer signature">
+      <div class="success-box" id="tech-success" style="display:none">Delivery submitted! Receipt emailed to dispatcher.</div>
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn btn-sm" onclick="goBackToSign()">Re-sign</button>
+        <button class="btn btn-primary" style="flex:1;padding:10px" onclick="submitDelivery()">Submit Delivery</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ COMPLETED ══════════ -->
+<div id="tab-inbox" class="view">
+  <div id="inbox-empty" style="font-size:13px;color:#aaa;padding:8px 4px">No completed deliveries yet.</div>
+  <div id="inbox-list"></div>
+</div>
+
+<!-- ══════════ SETTINGS ══════════ -->
+<div id="tab-settings" class="view">
+  <div class="card">
+    <div class="card-title">Email Configuration (EmailJS)</div>
+    <div class="emailjs-note">
+      <strong>One-time setup — takes about 10 minutes.</strong><br>
+      EmailJS lets this app send real emails for free (up to 200/month).<br>
+      Follow the setup guide included with this app to get these values.
+    </div>
+    <div class="field"><label>EmailJS Service ID</label><input id="cfg-service" placeholder="service_xxxxxxx"></div>
+    <div class="field"><label>EmailJS Template ID — Tech notification</label><input id="cfg-template-tech" placeholder="template_xxxxxxx"></div>
+    <div class="field"><label>EmailJS Template ID — Dispatcher receipt</label><input id="cfg-template-disp" placeholder="template_xxxxxxx"></div>
+    <div class="field"><label>EmailJS Public Key</label><input id="cfg-pubkey" placeholder="xxxxxxxxxxxxxxxxxxxx"></div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+      <button class="btn btn-sm" onclick="testEmail()">Send Test Email</button>
+    </div>
+    <div id="settings-saved" class="success-box" style="display:none;margin-top:12px">Settings saved!</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Company Info</div>
+    <div class="field"><label>Company name (shown on customer sign screen)</label><input id="cfg-company" placeholder="Your Company Name"></div>
+    <div class="field"><label>App link (SharePoint URL — for tech email)</label><input id="cfg-appurl" placeholder="https://yourcompany.sharepoint.com/..."></div>
+    <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+  </div>
+</div>
+
+<!-- PDF Modal -->
+<div id="pdf-modal-wrap" style="display:none;min-height:520px;background:rgba(0,0,0,.55);border-radius:12px;align-items:flex-start;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:10px;width:100%;max-width:520px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid #f0f2f5">
+      <span style="font-size:14px;font-weight:600" id="modal-fname"></span>
+      <button class="btn btn-sm" onclick="hidePDFModal()">Close</button>
+    </div>
+    <div style="padding:16px" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="powered">Toner Delivery App &mdash; Built for your Microsoft 365 environment</div>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+// ─── State ───────────────────────────────────────────────
+let jobs = [];
+let pdfData = null, pdfName = null;
+let sigCanvas, sigCtx, drawing = false, lx = 0, ly = 0;
+let settings = {};
+
+// ─── Init ─────────────────────────────────────────────────
+function loadSettings() {
+  try {
+    const s = localStorage.getItem('toner_settings');
+    if (s) settings = JSON.parse(s);
+    const j = localStorage.getItem('toner_jobs');
+    if (j) jobs = JSON.parse(j);
+  } catch(e) {}
+  if (settings['cfg-service']) {
+    ['cfg-service','cfg-template-tech','cfg-template-disp','cfg-pubkey','cfg-company','cfg-appurl'].forEach(k => {
+      const el = document.getElementById(k);
+      if (el && settings[k]) el.value = settings[k];
+    });
+    try { emailjs.init(settings['cfg-pubkey']); } catch(e) {}
+  } else {
+    document.getElementById('emailjs-warning').style.display = 'block';
+  }
+}
+
+function saveSettings() {
+  ['cfg-service','cfg-template-tech','cfg-template-disp','cfg-pubkey','cfg-company','cfg-appurl'].forEach(k => {
+    const el = document.getElementById(k);
+    if (el) settings[k] = el.value.trim();
+  });
+  localStorage.setItem('toner_settings', JSON.stringify(settings));
+  try { emailjs.init(settings['cfg-pubkey']); } catch(e) {}
+  document.getElementById('settings-saved').style.display = 'block';
+  document.getElementById('emailjs-warning').style.display = 'none';
+  setTimeout(() => document.getElementById('settings-saved').style.display = 'none', 2000);
+}
+
+function saveJobs() {
+  try {
+    const lite = jobs.map(j => ({...j, pdf: j.pdf ? '[pdf]' : null}));
+    localStorage.setItem('toner_jobs', JSON.stringify(lite));
+  } catch(e) {}
+}
+
+function testEmail() {
+  alert('Test email feature: fill in your EmailJS settings and save first, then come back to test.');
+}
+
+// ─── Tab switching ─────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'tech') renderTechView();
+  if (id === 'inbox') renderInbox();
+  if (id === 'dispatcher') renderSentJobs();
+}
+
+// ─── Equipment ────────────────────────────────────────────
+function addEquipment() {
+  const list = document.getElementById('eq-list');
+  const idx = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'eq-row'; row.dataset.idx = idx;
+  row.innerHTML = `<span class="eq-num">${idx + 1}</span><input type="text" placeholder="e.g. EQ-${10042 + idx}"><button class="eq-remove" onclick="removeEquipment(this)" title="Remove">×</button>`;
+  list.appendChild(row);
+  renumberEq();
+}
+
+function removeEquipment(btn) {
+  if (document.getElementById('eq-list').children.length <= 1) return;
+  btn.closest('.eq-row').remove();
+  renumberEq();
+}
+
+function renumberEq() {
+  document.querySelectorAll('#eq-list .eq-row').forEach((r, i) => r.querySelector('.eq-num').textContent = i + 1);
+}
+
+function getEquipmentNumbers() {
+  return Array.from(document.querySelectorAll('#eq-list .eq-row input')).map(i => i.value.trim()).filter(Boolean);
+}
+
+function eqTags(arr) { return arr.map(e => `<span class="eq-tag">${e}</span>`).join(''); }
+
+// ─── PDF ──────────────────────────────────────────────────
+function pickPDF(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    pdfData = ev.target.result; pdfName = f.name;
+    document.getElementById('pn').textContent = f.name;
+    document.getElementById('ps').textContent = (f.size / 1024).toFixed(1) + ' KB';
+    document.getElementById('pdf-selected').style.display = 'block';
+    document.getElementById('uz').style.display = 'none';
+  };
+  r.readAsDataURL(f);
+}
+
+function clearPDF() {
+  pdfData = null; pdfName = null;
+  document.getElementById('pdf-selected').style.display = 'none';
+  document.getElementById('uz').style.display = 'block';
+  document.getElementById('fu').value = '';
+  document.getElementById('email-preview-box').style.display = 'none';
+}
+
+// ─── Dispatcher ───────────────────────────────────────────
+function previewEmail() {
+  const tech = document.getElementById('d-tech').value.trim() || 'Tech';
+  const cust = document.getElementById('d-cust').value.trim() || 'Customer';
+  const addr = document.getElementById('d-addr').value.trim() || 'Address';
+  const to = document.getElementById('d-techemail').value.trim() || 'tech@company.com';
+  const eqs = getEquipmentNumbers();
+  document.getElementById('prev-to').textContent = to;
+  document.getElementById('prev-subj').textContent = cust + ' toner delivery';
+  document.getElementById('prev-tech').textContent = tech;
+  document.getElementById('prev-cust').textContent = cust;
+  document.getElementById('prev-addr').textContent = addr;
+  document.getElementById('prev-eq').textContent = eqs.length ? eqs.join(', ') : '(none entered)';
+  document.getElementById('email-preview-box').style.display = 'block';
+}
+
+function sendToTech() {
+  const cust = document.getElementById('d-cust').value.trim();
+  const tech = document.getElementById('d-tech').value.trim();
+  const addr = document.getElementById('d-addr').value.trim();
+  const techemail = document.getElementById('d-techemail').value.trim();
+  const dispemail = document.getElementById('d-dispemail').value.trim();
+  const eqs = getEquipmentNumbers();
+  if (!cust || !tech || !addr || !techemail || !dispemail) { alert('Please fill in all fields.'); return; }
+  if (!eqs.length) { alert('Please enter at least one equipment number.'); return; }
+  if (!pdfData) { alert('Please upload the eAutomate PDF.'); return; }
+
+  const job = {
+    id: 'JOB-' + String(jobs.length + 1).padStart(3, '0'),
+    cust, equipmentNums: eqs, tech, addr, techemail, dispemail,
+    pdf: pdfData, pdfName: pdfName || 'delivery.pdf',
+    status: 'sent', sentAt: new Date().toLocaleString(),
+    sig: null, signedBy: null, qty: null, completedAt: null
+  };
+  jobs.push(job);
+
+  // Send email via EmailJS if configured
+  if (settings['cfg-service'] && settings['cfg-template-tech']) {
+    const appUrl = settings['cfg-appurl'] || window.location.href;
+    emailjs.send(settings['cfg-service'], settings['cfg-template-tech'], {
+      to_email: techemail,
+      to_name: tech,
+      customer_name: cust,
+      address: addr,
+      equipment: eqs.join(', '),
+      job_id: job.id,
+      app_link: appUrl
+    }).then(() => {
+      console.log('Tech email sent');
+    }).catch(err => {
+      console.warn('EmailJS error:', err);
+      alert('Job saved but email failed. Check your EmailJS settings in the Settings tab.\n\nError: ' + (err.text || err));
+    });
+  }
+
+  // Clear form
+  document.getElementById('d-cust').value = '';
+  document.getElementById('d-tech').value = '';
+  document.getElementById('d-addr').value = '';
+  document.getElementById('d-techemail').value = '';
+  document.getElementById('d-dispemail').value = '';
+  document.getElementById('eq-list').innerHTML = '<div class="eq-row" data-idx="0"><span class="eq-num">1</span><input type="text" placeholder="e.g. EQ-10042"></div>';
+  document.getElementById('email-preview-box').style.display = 'none';
+  clearPDF();
+  saveJobs();
+  renderSentJobs();
+  alert('Job ' + job.id + ' created!' + (settings['cfg-service'] ? ' Email sent to ' + techemail : ' (Configure email in Settings to send real emails)'));
+}
+
+function renderSentJobs() {
+  const el = document.getElementById('sent-jobs');
+  const active = jobs.filter(j => j.status !== 'completed');
+  if (!active.length) { el.innerHTML = '<div style="font-size:13px;color:#aaa;padding:8px 4px">No active jobs.</div>'; return; }
+  el.innerHTML = active.map(j => `
+    <div class="job-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="job-title">${j.id} — ${j.cust}</div>
+          <div class="job-meta">${j.addr}</div>
+          <div class="job-meta">Tech: ${j.tech} &middot; ${j.techemail}</div>
+          <div style="margin-top:7px">${eqTags(j.equipmentNums)}</div>
+          <div class="job-meta" style="margin-top:5px">Sent ${j.sentAt}</div>
+        </div>
+        <span class="badge b-pending">Awaiting signature</span>
+      </div>
+    </div>`).join('');
+}
+
+// ─── Tech view ────────────────────────────────────────────
+function renderTechView() {
+  const pending = jobs.filter(j => j.status === 'sent');
+  document.getElementById('tech-no-job').style.display = pending.length ? 'none' : 'block';
+  document.getElementById('tech-main').style.display = pending.length ? 'block' : 'none';
+  document.getElementById('cust-sign-screen').style.display = 'none';
+  document.getElementById('tech-submit-screen').style.display = 'none';
+  document.getElementById('tech-success').style.display = 'none';
+  if (!pending.length) return;
+  const j = pending[0];
+  document.getElementById('tj-id').textContent = j.id + ' — ' + j.cust;
+  document.getElementById('tj-addr').textContent = j.addr;
+  document.getElementById('tj-eq-tags').innerHTML = eqTags(j.equipmentNums);
+  document.getElementById('tj-pdfname').textContent = j.pdfName;
+  document.getElementById('t-cname').value = '';
+  document.getElementById('t-qty').value = '1';
+}
+
+function goToCustomerScreen() {
+  const name = document.getElementById('t-cname').value.trim();
+  const qty = document.getElementById('t-qty').value;
+  if (!name) { alert('Please enter the customer printed name first.'); return; }
+  const j = jobs.filter(j => j.status === 'sent')[0];
+  const company = settings['cfg-company'] || j.cust;
+  document.getElementById('cs-company').textContent = company;
+  document.getElementById('cs-eq').textContent = j.equipmentNums.join(', ');
+  document.getElementById('cs-qty').textContent = qty + ' unit' + (qty > 1 ? 's' : '');
+  document.getElementById('cs-addr').textContent = j.addr;
+  document.getElementById('tech-main').style.display = 'none';
+  document.getElementById('cust-sign-screen').style.display = 'block';
+  setTimeout(initSig, 80);
+}
+
+function initSig() {
+  sigCanvas = document.getElementById('sigpad');
+  if (!sigCanvas) return;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCanvas.width = sigCanvas.offsetWidth || 360;
+  sigCanvas.height = 170;
+  sigCtx.strokeStyle = '#1a1a2e'; sigCtx.lineWidth = 2.5; sigCtx.lineCap = 'round'; sigCtx.lineJoin = 'round';
+  sigCanvas.onmousedown = e => { drawing = true; const r = sigCanvas.getBoundingClientRect(); lx = e.clientX - r.left; ly = e.clientY - r.top; };
+  sigCanvas.onmousemove = e => { if (!drawing) return; const r = sigCanvas.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top; sigCtx.beginPath(); sigCtx.moveTo(lx, ly); sigCtx.lineTo(x, y); sigCtx.stroke(); lx = x; ly = y; };
+  sigCanvas.onmouseup = sigCanvas.onmouseleave = () => drawing = false;
+  sigCanvas.ontouchstart = e => { e.preventDefault(); drawing = true; const r = sigCanvas.getBoundingClientRect(), t = e.touches[0]; lx = t.clientX - r.left; ly = t.clientY - r.top; };
+  sigCanvas.ontouchmove = e => { e.preventDefault(); if (!drawing) return; const r = sigCanvas.getBoundingClientRect(), t = e.touches[0]; const x = t.clientX - r.left, y = t.clientY - r.top; sigCtx.beginPath(); sigCtx.moveTo(lx, ly); sigCtx.lineTo(x, y); sigCtx.stroke(); lx = x; ly = y; };
+  sigCanvas.ontouchend = () => drawing = false;
+}
+
+function clearSig() { if (sigCtx) sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
+
+function isSigBlank() {
+  if (!sigCanvas) return true;
+  const d = sigCtx.getImageData(0, 0, sigCanvas.width, sigCanvas.height).data;
+  for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return false;
+  return true;
+}
+
+function confirmSignature() {
+  if (isSigBlank()) { alert('Please sign before confirming.'); return; }
+  const sigData = sigCanvas.toDataURL('image/png');
+  const j = jobs.filter(j => j.status === 'sent')[0];
+  const name = document.getElementById('t-cname').value.trim();
+  const qty = document.getElementById('t-qty').value;
+  document.getElementById('submit-summary').innerHTML = `
+    <div style="font-size:13px">
+      <div class="summary-row"><span>Job ID</span><span>${j.id}</span></div>
+      <div class="summary-row"><span>Customer</span><span>${j.cust}</span></div>
+      <div class="summary-row"><span>Equipment</span><span style="text-align:right">${j.equipmentNums.join(', ')}</span></div>
+      <div class="summary-row"><span>Qty delivered</span><span>${qty}</span></div>
+      <div class="summary-row"><span>Signed by</span><span>${name}</span></div>
+      <div class="summary-row"><span>Date</span><span>${new Date().toLocaleDateString()}</span></div>
+    </div>`;
+  document.getElementById('sig-result').src = sigData;
+  document.getElementById('cust-sign-screen').style.display = 'none';
+  document.getElementById('tech-submit-screen').style.display = 'block';
+  j._pendingSig = sigData;
+  j._pendingName = name;
+  j._pendingQty = qty;
+}
+
+function goBackToSign() {
+  document.getElementById('tech-submit-screen').style.display = 'none';
+  document.getElementById('cust-sign-screen').style.display = 'block';
+  clearSig();
+}
+
+function submitDelivery() {
+  const j = jobs.filter(j => j.status === 'sent')[0]; if (!j) return;
+  j.sig = j._pendingSig;
+  j.signedBy = j._pendingName;
+  j.qty = j._pendingQty;
+  j.status = 'completed';
+  j.completedAt = new Date().toLocaleString();
+
+  // Send completion email to dispatcher via EmailJS
+  if (settings['cfg-service'] && settings['cfg-template-disp']) {
+    emailjs.send(settings['cfg-service'], settings['cfg-template-disp'], {
+      to_email: j.dispemail,
+      job_id: j.id,
+      customer_name: j.cust,
+      address: j.addr,
+      equipment: j.equipmentNums.join(', '),
+      qty: j.qty,
+      tech_name: j.tech,
+      signed_by: j.signedBy,
+      completed_at: j.completedAt,
+      signature_image: j.sig
+    }).then(() => {
+      console.log('Dispatcher receipt sent');
+    }).catch(err => {
+      console.warn('EmailJS error:', err);
+    });
+  }
+
+  saveJobs();
+  document.getElementById('tech-success').style.display = 'block';
+  setTimeout(() => { renderTechView(); }, 2000);
+  renderSentJobs();
+}
+
+// ─── PDF Modal ────────────────────────────────────────────
+function showPDFModal() {
+  const j = jobs.filter(j => j.status === 'sent')[0]; if (!j) return;
+  document.getElementById('modal-fname').textContent = j.pdfName;
+  document.getElementById('modal-body').innerHTML = j.pdf
+    ? `<iframe src="${j.pdf}" style="width:100%;height:400px;border:none;border-radius:8px"></iframe>`
+    : '<p style="font-size:13px;color:#888">PDF not available in this session.</p>';
+  document.getElementById('pdf-modal-wrap').style.display = 'flex';
+}
+function hidePDFModal() { document.getElementById('pdf-modal-wrap').style.display = 'none'; }
+
+// ─── Completed inbox ──────────────────────────────────────
+function renderInbox() {
+  const el = document.getElementById('inbox-list');
+  const emp = document.getElementById('inbox-empty');
+  const done = jobs.filter(j => j.status === 'completed');
+  if (!done.length) { el.innerHTML = ''; emp.style.display = 'block'; return; }
+  emp.style.display = 'none';
+  el.innerHTML = done.map(j => `
+    <div class="job-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div class="job-title">${j.id} — ${j.cust}</div>
+          <div class="job-meta">Qty: ${j.qty} &middot; ${j.addr}</div>
+          <div style="margin-top:6px">${eqTags(j.equipmentNums)}</div>
+          <div class="job-meta" style="margin-top:4px">Tech: ${j.tech}</div>
+        </div>
+        <span class="badge b-done">Signed</span>
+      </div>
+      <div class="email-preview">
+        <div><strong>Receipt emailed to:</strong> ${j.dispemail}</div>
+        <div style="margin-top:4px">Completed by ${j.tech} on ${j.completedAt}.<br>
+        <strong>${j.signedBy}</strong> signed for ${j.qty} unit(s). Equipment: ${j.equipmentNums.join(', ')}.</div>
+      </div>
+      ${j.sig ? `<img src="${j.sig}" class="sig-img" alt="Signature">` : ''}
+      <div style="font-size:11px;color:#aaa;margin-top:6px">Signed by: ${j.signedBy} &middot; ${j.completedAt}</div>
+    </div>`).join('');
+}
+
+// ─── Boot ─────────────────────────────────────────────────
+loadSettings();
+renderSentJobs();
+</script>
+</body>
+</html>
